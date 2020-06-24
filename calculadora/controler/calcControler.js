@@ -15,6 +15,8 @@ class CalcControler {
     setInterval(() => {
       this.setDisplayDateTimne();
     }, 1000);
+
+    this.setLastNumberToDisplay();
   }
 
   addEventListenerAll(element, events, fn) {
@@ -25,10 +27,12 @@ class CalcControler {
 
   clearAll() {
     this._operation = [];
+    this.setLastNumberToDisplay();
   }
 
   clearEntry() {
     this._operation.pop();
+    this.setLastNumberToDisplay();
   }
 
   getLastOperation() {
@@ -52,12 +56,21 @@ class CalcControler {
   }
 
   calc() {
-    let last = this._operation.pop();
-
     let result = eval(this._operation.join(""));
+    let last = "";
 
-    this._operation = [result, last];
+    if (this._operation.length > 3) {
+      let last = this._operation.pop();
+    }
 
+    if (last === "%") {
+      result /= 100;
+      this._operation = [result];
+      this.setLastNumberToDisplay();
+    } else {
+      this._operation = [result];
+      if (last) this._operation.push(last);
+    }
     this.setLastNumberToDisplay();
   }
 
@@ -70,6 +83,9 @@ class CalcControler {
         break;
       }
     }
+
+    if (!lastNumber) lastNumber = 0;
+
     this.displayCalc = lastNumber;
   }
 
@@ -134,6 +150,7 @@ class CalcControler {
         break;
 
       case "igual":
+        this.calc();
         break;
       case "0":
       case "1":
