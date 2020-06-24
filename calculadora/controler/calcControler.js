@@ -58,14 +58,19 @@ class CalcControler {
     }
   }
 
+  getResult() {
+    return eval(this._operation.join(""));
+  }
+
   calc() {
-    let result = eval(this._operation.join(""));
     let last = "";
 
     if (this._operation.length > 3) {
       let last = this._operation.pop();
-      this._lastNumber = result;
+      this._lastNumber = this.getResult();
     }
+
+    let result = this.getResult();
 
     if (last === "%") {
       result /= 100;
