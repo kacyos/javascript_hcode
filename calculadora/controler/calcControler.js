@@ -64,15 +64,24 @@ class CalcControler {
 
   calc() {
     let last = "";
+    this._lastOperator = this.getLastItem();
+
+    if (this._operation.length <= 3) {
+      let firstItem = this._operation[0];
+      this._operation = [firstItem, this._lastOperator, this._lastNumber];
+    }
 
     if (this._operation.length > 3) {
       let last = this._operation.pop();
+
+      this._lastNumber = this.getLastItem();
+    } else if (this._operation.length == 3) {
       this._lastNumber = this.getResult();
     }
 
     let result = this.getResult();
 
-    if (last === "%") {
+    if (last == "%") {
       result /= 100;
       this._operation = [result];
       this.setLastNumberToDisplay();
@@ -87,30 +96,23 @@ class CalcControler {
     let lastItem;
 
     for (let i = this._operation.length - 1; i >= 0; i--) {
-      if (isOperator) {
-        if (this.isOperator(this._operation[i])) {
-          lastItem = this._operation[i];
-          break;
-        }
-      } else {
-        if (!this.isOperator(this._operation[i])) {
-          lastItem = this._operation[i];
-          break;
-        }
+      if (!this.isOperator(this._operation[i]) == isOperator) {
+        lastItem = this._operation[i];
+        break;
       }
     }
+
+    console.log(this._operation);
+
+    if (!lastItem) {
+      lastItem = isOperator ? this._lastOperator : this._lastNumber;
+    }
+
     return lastItem;
   }
 
   setLastNumberToDisplay() {
-    let lastNumber;
-
-    for (let i = this._operation.length - 1; i >= 0; i--) {
-      if (!this.isOperator(this._operation[i])) {
-        lastNumber = this._operation[i];
-        break;
-      }
-    }
+    let lastNumber = this.getLastItem();
 
     if (!lastNumber) lastNumber = 0;
 
@@ -122,7 +124,6 @@ class CalcControler {
       if (this.isOperator(value)) {
         this.setLastOperation(value);
       } else if (isNaN(value)) {
-        console.log("outra coisa");
       } else {
         this.pushOperation(value);
         this.setLastNumberToDisplay();
